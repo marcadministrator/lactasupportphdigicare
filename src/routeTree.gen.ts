@@ -15,6 +15,7 @@ import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as LocatorRouteImport } from './routes/locator'
 import { Route as GuidesRouteImport } from './routes/guides'
 import { Route as ForumRouteImport } from './routes/forum'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 
 const TrackerRoute = TrackerRouteImport.update({
@@ -47,6 +48,11 @@ const ForumRoute = ForumRouteImport.update({
   path: '/forum',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,6 +61,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/forum': typeof ForumRoute
   '/guides': typeof GuidesRoute
   '/locator': typeof LocatorRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/forum': typeof ForumRoute
   '/guides': typeof GuidesRoute
   '/locator': typeof LocatorRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/forum': typeof ForumRoute
   '/guides': typeof GuidesRoute
   '/locator': typeof LocatorRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
     | '/forum'
     | '/guides'
     | '/locator'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
     | '/forum'
     | '/guides'
     | '/locator'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/account'
     | '/forum'
     | '/guides'
     | '/locator'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
   ForumRoute: typeof ForumRoute
   GuidesRoute: typeof GuidesRoute
   LocatorRoute: typeof LocatorRoute
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForumRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -177,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
   ForumRoute: ForumRoute,
   GuidesRoute: GuidesRoute,
   LocatorRoute: LocatorRoute,

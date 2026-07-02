@@ -9,6 +9,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
   loadList,
   saveList,
   FEED_KEY,
@@ -89,12 +101,64 @@ function TrackerPage() {
   const feedsToday = feeds.filter((f) => f.timestamp >= todayStart).length;
   const diapersToday = diapers.filter((d) => d.timestamp >= todayStart).length;
 
+  const chartData = useMemo(() => {
+    const days: { day: string; feeds: number; diapers: number }[] = [];
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    for (let i = 6; i >= 0; i--) {
+      const start = new Date(now);
+      start.setDate(now.getDate() - i);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 1);
+      const s = start.getTime();
+      const e = end.getTime();
+      days.push({
+        day: start.toLocaleDateString([], { weekday: "short" }),
+        feeds: feeds.filter((f) => f.timestamp >= s && f.timestamp < e).length,
+        diapers: diapers.filter((d) => d.timestamp >= s && d.timestamp < e).length,
+      });
+    }
+    return days;
+  }, [feeds, diapers]);
+
   return (
     <AppShell title="Tracker" subtitle="Simple offline log — no data required">
       <div className="grid grid-cols-2 gap-3">
         <StatChip label="Today's feeds" value={feedsToday} />
         <StatChip label="Today's diapers" value={diapersToday} />
       </div>
+
+      <Card className="mt-4">
+        <CardContent className="p-4">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-sm font-semibold text-foreground">7-day overview</p>
+            <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+              <span className="inline-flex items-center gap-1">
+                <span className="h-2 w-2 rounded-sm bg-[hsl(var(--primary))]" /> Feeds
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <span className="h-2 w-2 rounded-sm bg-[hsl(var(--secondary-foreground))]" /> Diapers
+              </span>
+            </div>
+          </div>
+          <ChartContainer
+            config={{
+              feeds: { label: "Feeds", color: "hsl(var(--primary))" },
+              diapers: { label: "Diapers", color: "hsl(var(--secondary-foreground))" },
+            }}
+            className="h-40 w-full"
+          >
+            <BarChart data={chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis dataKey="day" tickLine={false} axisLine={false} fontSize={11} />
+              <YAxis allowDecimals={false} tickLine={false} axisLine={false} fontSize={11} width={28} />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar dataKey="feeds" fill="var(--color-feeds)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="diapers" fill="var(--color-diapers)" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
 
       <Tabs defaultValue="feed" className="mt-5">
         <TabsList className="grid w-full grid-cols-2">
