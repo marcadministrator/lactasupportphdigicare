@@ -85,7 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Offline breastfeeding & diaper tracking, SMS reminders, health center locator, and local-language guides for Filipino mothers.",
       },
       { name: "theme-color", content: "#c76b4a" },
-      { property: "og:title", content: "LactaSupport PH DigiCare" },
+      { property: "og:title", content: "LactaSupport PH — Offline Breastfeeding Support" },
       {
         property: "og:description",
         content:
@@ -95,6 +95,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: "LactaSupport" },
+      { name: "twitter:title", content: "LactaSupport PH — Offline Breastfeeding Support" },
+      { name: "description", content: "LactaCare Connect offers offline breastfeeding and diaper tracking, SMS reminders, and educational content for postpartum mothers." },
+      { property: "og:description", content: "LactaCare Connect offers offline breastfeeding and diaper tracking, SMS reminders, and educational content for postpartum mothers." },
+      { name: "twitter:description", content: "LactaCare Connect offers offline breastfeeding and diaper tracking, SMS reminders, and educational content for postpartum mothers." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b6c38896-eede-49c1-be17-299e4a76cad3/id-preview-b6e8078b--01823013-e2fb-4f33-a80b-f1a4f94470a1.lovable.app-1782988374487.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b6c38896-eede-49c1-be17-299e4a76cad3/id-preview-b6e8078b--01823013-e2fb-4f33-a80b-f1a4f94470a1.lovable.app-1782988374487.png" },
     ],
     links: [
       {
