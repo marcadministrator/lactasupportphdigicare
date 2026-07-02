@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackerRouteImport } from './routes/tracker'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as LocatorRouteImport } from './routes/locator'
 import { Route as GuidesRouteImport } from './routes/guides'
@@ -19,6 +20,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const TrackerRoute = TrackerRouteImport.update({
   id: '/tracker',
   path: '/tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RemindersRoute = RemindersRouteImport.update({
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/guides': typeof GuidesRoute
   '/locator': typeof LocatorRoute
   '/reminders': typeof RemindersRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tracker': typeof TrackerRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/guides': typeof GuidesRoute
   '/locator': typeof LocatorRoute
   '/reminders': typeof RemindersRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tracker': typeof TrackerRoute
 }
 export interface FileRoutesById {
@@ -70,13 +78,28 @@ export interface FileRoutesById {
   '/guides': typeof GuidesRoute
   '/locator': typeof LocatorRoute
   '/reminders': typeof RemindersRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tracker': typeof TrackerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/forum' | '/guides' | '/locator' | '/reminders' | '/tracker'
+  fullPaths:
+    | '/'
+    | '/forum'
+    | '/guides'
+    | '/locator'
+    | '/reminders'
+    | '/sitemap.xml'
+    | '/tracker'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/forum' | '/guides' | '/locator' | '/reminders' | '/tracker'
+  to:
+    | '/'
+    | '/forum'
+    | '/guides'
+    | '/locator'
+    | '/reminders'
+    | '/sitemap.xml'
+    | '/tracker'
   id:
     | '__root__'
     | '/'
@@ -84,6 +107,7 @@ export interface FileRouteTypes {
     | '/guides'
     | '/locator'
     | '/reminders'
+    | '/sitemap.xml'
     | '/tracker'
   fileRoutesById: FileRoutesById
 }
@@ -93,6 +117,7 @@ export interface RootRouteChildren {
   GuidesRoute: typeof GuidesRoute
   LocatorRoute: typeof LocatorRoute
   RemindersRoute: typeof RemindersRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrackerRoute: typeof TrackerRoute
 }
 
@@ -103,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/tracker'
       fullPath: '/tracker'
       preLoaderRoute: typeof TrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reminders': {
@@ -149,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuidesRoute: GuidesRoute,
   LocatorRoute: LocatorRoute,
   RemindersRoute: RemindersRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrackerRoute: TrackerRoute,
 }
 export const routeTree = rootRouteImport
