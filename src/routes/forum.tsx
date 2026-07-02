@@ -6,8 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ShieldCheck, Heart } from "lucide-react";
-import { loadList, saveList } from "@/lib/storage";
+import { ShieldCheck, Heart, Trash2 } from "lucide-react";
+import { loadList, saveList, loadObject, PROFILE_KEY } from "@/lib/storage";
 
 export const Route = createFileRoute("/forum")({
   head: () => ({
@@ -54,6 +54,8 @@ function ForumPage() {
     } else {
       setPosts(existing);
     }
+    const profile = loadObject<{ name?: string }>(PROFILE_KEY, {});
+    if (profile.name) setName(profile.name);
   }, []);
 
   function submit(e: React.FormEvent) {
@@ -69,6 +71,12 @@ function ForumPage() {
     setPosts(next);
     saveList(KEY, next);
     setBody("");
+  }
+
+  function remove(id: string) {
+    const next = posts.filter((p) => p.id !== id);
+    setPosts(next);
+    saveList(KEY, next);
   }
 
   return (
@@ -122,6 +130,14 @@ function ForumPage() {
                   <span className="ml-auto text-[10px] text-muted-foreground">
                     {new Date(p.ts).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => remove(p.id)}
+                    aria-label="Delete post"
+                    className="rounded-lg p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                  </button>
                 </div>
                 <p className="mt-2 text-sm text-foreground/85">{p.body}</p>
               </CardContent>

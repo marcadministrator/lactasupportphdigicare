@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Baby, MapPin, BookOpen, MessageCircle, Bell } from "lucide-react";
+import { Home, Baby, MapPin, BookOpen, MessageCircle, Bell, User } from "lucide-react";
 import type { ReactNode } from "react";
 
 const NAV = [
@@ -9,6 +9,7 @@ const NAV = [
   { to: "/guides", label: "Guides", Icon: BookOpen },
   { to: "/forum", label: "Forum", Icon: MessageCircle },
   { to: "/reminders", label: "SMS", Icon: Bell },
+  { to: "/account", label: "Account", Icon: User },
 ] as const;
 
 export function AppShell({
@@ -39,7 +40,7 @@ export function AppShell({
         aria-label="Primary"
         className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-md border-t border-border/70 bg-background/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 backdrop-blur"
       >
-        <ul className="grid grid-cols-6 gap-1">
+        <ul className="grid grid-cols-7 gap-1">
           {NAV.map(({ to, label, Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
             return (
