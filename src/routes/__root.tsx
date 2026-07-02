@@ -76,15 +76,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: "LactaSupport PH — Offline Breastfeeding Support" },
+      {
+        name: "description",
+        content:
+          "Offline breastfeeding & diaper tracking, SMS reminders, health center locator, and local-language guides for Filipino mothers.",
+      },
+      { name: "theme-color", content: "#c76b4a" },
+      { property: "og:title", content: "LactaSupport PH DigiCare" },
+      {
+        property: "og:description",
+        content:
+          "Ultra-light offline PWA supporting Filipino mothers with tracking, health centers, and SMS reminders.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "LactaSupport" },
     ],
     links: [
       {
@@ -92,6 +101,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icon-512.png" },
     ],
   }),
   shellComponent: RootShell,
