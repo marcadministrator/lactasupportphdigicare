@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackerRouteImport } from './routes/tracker'
+import { Route as StoreRouteImport } from './routes/store'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as LocatorRouteImport } from './routes/locator'
@@ -21,6 +22,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const TrackerRoute = TrackerRouteImport.update({
   id: '/tracker',
   path: '/tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoreRoute = StoreRouteImport.update({
+  id: '/store',
+  path: '/store',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/locator': typeof LocatorRoute
   '/reminders': typeof RemindersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/store': typeof StoreRoute
   '/tracker': typeof TrackerRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/locator': typeof LocatorRoute
   '/reminders': typeof RemindersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/store': typeof StoreRoute
   '/tracker': typeof TrackerRoute
 }
 export interface FileRoutesById {
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/locator': typeof LocatorRoute
   '/reminders': typeof RemindersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/store': typeof StoreRoute
   '/tracker': typeof TrackerRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/locator'
     | '/reminders'
     | '/sitemap.xml'
+    | '/store'
     | '/tracker'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/locator'
     | '/reminders'
     | '/sitemap.xml'
+    | '/store'
     | '/tracker'
   id:
     | '__root__'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/locator'
     | '/reminders'
     | '/sitemap.xml'
+    | '/store'
     | '/tracker'
   fileRoutesById: FileRoutesById
 }
@@ -131,6 +143,7 @@ export interface RootRouteChildren {
   LocatorRoute: typeof LocatorRoute
   RemindersRoute: typeof RemindersRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StoreRoute: typeof StoreRoute
   TrackerRoute: typeof TrackerRoute
 }
 
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/tracker'
       fullPath: '/tracker'
       preLoaderRoute: typeof TrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/store': {
+      id: '/store'
+      path: '/store'
+      fullPath: '/store'
+      preLoaderRoute: typeof StoreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocatorRoute: LocatorRoute,
   RemindersRoute: RemindersRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StoreRoute: StoreRoute,
   TrackerRoute: TrackerRoute,
 }
 export const routeTree = rootRouteImport

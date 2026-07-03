@@ -46,7 +46,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      delete_forum_post: {
+        Args: { caller_client_id: string; post_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
