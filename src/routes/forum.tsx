@@ -120,12 +120,11 @@ function ForumPage() {
       toast.error("You can only delete your own posts");
       return;
     }
-    const { error } = await supabase
-      .from("forum_posts")
-      .delete()
-      .eq("id", id)
-      .setHeader("x-client-id", clientId);
-    if (error) toast.error("Couldn't delete");
+    const { data, error } = await supabase.rpc("delete_forum_post", {
+      post_id: id,
+      caller_client_id: clientId,
+    });
+    if (error || data === false) toast.error("Couldn't delete");
   }
 
   return (
