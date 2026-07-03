@@ -14,7 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      forum_posts: {
+        Row: {
+          body: string
+          client_id: string | null
+          created_at: string
+          id: string
+          name: string
+          role: string | null
+        }
+        Insert: {
+          body: string
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          role?: string | null
+        }
+        Update: {
+          body?: string
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          role?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
