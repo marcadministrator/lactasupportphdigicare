@@ -14,7 +14,6 @@ import { Route as StoreRouteImport } from './routes/store'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as LocatorRouteImport } from './routes/locator'
-import { Route as GuidesRouteImport } from './routes/guides'
 import { Route as ForumRouteImport } from './routes/forum'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
@@ -44,11 +43,6 @@ const LocatorRoute = LocatorRouteImport.update({
   path: '/locator',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuidesRoute = GuidesRouteImport.update({
-  id: '/guides',
-  path: '/guides',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ForumRoute = ForumRouteImport.update({
   id: '/forum',
   path: '/forum',
@@ -69,7 +63,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/forum': typeof ForumRoute
-  '/guides': typeof GuidesRoute
   '/locator': typeof LocatorRoute
   '/reminders': typeof RemindersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -80,7 +73,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/forum': typeof ForumRoute
-  '/guides': typeof GuidesRoute
   '/locator': typeof LocatorRoute
   '/reminders': typeof RemindersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -92,7 +84,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/forum': typeof ForumRoute
-  '/guides': typeof GuidesRoute
   '/locator': typeof LocatorRoute
   '/reminders': typeof RemindersRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -105,7 +96,6 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/forum'
-    | '/guides'
     | '/locator'
     | '/reminders'
     | '/sitemap.xml'
@@ -116,7 +106,6 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/forum'
-    | '/guides'
     | '/locator'
     | '/reminders'
     | '/sitemap.xml'
@@ -127,7 +116,6 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/forum'
-    | '/guides'
     | '/locator'
     | '/reminders'
     | '/sitemap.xml'
@@ -139,7 +127,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   ForumRoute: typeof ForumRoute
-  GuidesRoute: typeof GuidesRoute
   LocatorRoute: typeof LocatorRoute
   RemindersRoute: typeof RemindersRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -184,13 +171,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LocatorRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/guides': {
-      id: '/guides'
-      path: '/guides'
-      fullPath: '/guides'
-      preLoaderRoute: typeof GuidesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/forum': {
       id: '/forum'
       path: '/forum'
@@ -219,7 +199,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   ForumRoute: ForumRoute,
-  GuidesRoute: GuidesRoute,
   LocatorRoute: LocatorRoute,
   RemindersRoute: RemindersRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
