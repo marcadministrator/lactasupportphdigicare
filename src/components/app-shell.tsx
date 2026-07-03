@@ -1,15 +1,16 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Baby, MapPin, BookOpen, MessageCircle, Bell, User } from "lucide-react";
+import { Home, Baby, MapPin, BookOpen, MessageCircle, Bell, User, ShoppingBag } from "lucide-react";
 import type { ReactNode } from "react";
 
 const NAV = [
   { to: "/", label: "Home", Icon: Home },
   { to: "/tracker", label: "Track", Icon: Baby },
-  { to: "/locator", label: "Centers", Icon: MapPin },
+  { to: "/locator", label: "Care", Icon: MapPin },
+  { to: "/store", label: "Store", Icon: ShoppingBag },
   { to: "/guides", label: "Guides", Icon: BookOpen },
   { to: "/forum", label: "Forum", Icon: MessageCircle },
   { to: "/reminders", label: "SMS", Icon: Bell },
-  { to: "/account", label: "Account", Icon: User },
+  { to: "/account", label: "Me", Icon: User },
 ] as const;
 
 export function AppShell({
@@ -40,20 +41,20 @@ export function AppShell({
         aria-label="Primary"
         className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-md border-t border-border/70 bg-background/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 backdrop-blur"
       >
-        <ul className="grid grid-cols-7 gap-1">
+        <ul className="grid grid-cols-8 gap-0.5">
           {NAV.map(({ to, label, Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
             return (
               <li key={to}>
                 <Link
                   to={to}
-                  className={`flex flex-col items-center justify-center gap-1 rounded-xl px-1 py-1.5 text-[10px] font-medium transition-colors ${
+                  className={`flex flex-col items-center justify-center gap-0.5 rounded-lg px-0.5 py-1.5 text-[9px] font-medium transition-colors ${
                     active
                       ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Icon className="h-5 w-5" aria-hidden="true" />
+                  <Icon className="h-4 w-4" aria-hidden="true" />
                   <span>{label}</span>
                 </Link>
               </li>
