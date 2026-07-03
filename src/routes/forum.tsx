@@ -166,12 +166,7 @@ function ForumPage() {
             rows={3}
           />
         </div>
-        <Button type="submit" className="w-full">
-          Post
-        </Button>
-      </form>
-
-      <Button type="submit" className="w-full" disabled={posting || !online}>
+        <Button type="submit" className="w-full" disabled={posting || !online}>
           {posting ? "Posting…" : "Post"}
         </Button>
       </form>
