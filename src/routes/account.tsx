@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { UserCircle2, LogOut } from "lucide-react";
+import { UserCircle2, LogOut, ShieldCheck } from "lucide-react";
 import { loadObject, saveObject, PROFILE_KEY } from "@/lib/storage";
 
 export const Route = createFileRoute("/account")({
@@ -95,6 +95,13 @@ function AccountPage() {
           <LogOut className="h-4 w-4" aria-hidden /> Burahin ang account
         </button>
       ) : null}
+
+      <Link
+        to="/admin"
+        className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10"
+      >
+        <ShieldCheck className="h-4 w-4" aria-hidden /> Administrator sign in
+      </Link>
     </AppShell>
   );
 }

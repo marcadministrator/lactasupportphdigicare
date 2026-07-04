@@ -3,6 +3,8 @@ import { AppShell } from "@/components/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CreditCard, Wallet, Bitcoin, Truck, ShoppingBag, MessageCircle, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/store")({
   head: () => ({
@@ -18,7 +20,7 @@ export const Route = createFileRoute("/store")({
   component: StorePage,
 });
 
-const PRODUCTS = [
+const FALLBACK_PRODUCTS = [
   {
     id: "kit",
     name: "LactaSupport Kit",
@@ -54,6 +56,31 @@ const PAYMENTS = [
 ] as const;
 
 function StorePage() {
+  type Item = { id: string; name: string; price: string; tagline?: string; bullets: readonly string[]; tone: string };
+  const [items, setItems] = useState<Item[]>(FALLBACK_PRODUCTS as unknown as Item[]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("store_products")
+        .select("id,name,price_cents,description,active,sort_order")
+        .eq("active", true)
+        .order("sort_order");
+      if (data && data.length > 0) {
+        setItems(
+          data.map((p, i) => ({
+            id: p.id,
+            name: p.name,
+            price: `₱${(p.price_cents / 100).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            tagline: p.description ?? undefined,
+            bullets: [] as readonly string[],
+            tone: i % 2 === 0 ? "bg-primary/10 text-primary" : "bg-secondary text-secondary-foreground",
+          })),
+        );
+      }
+    })();
+  }, []);
+
   const orderLink = (name: string) =>
     `sms:?&body=${encodeURIComponent(`Hi LactaSupport! I'd like to order: ${name}.`)}`;
 
@@ -69,7 +96,7 @@ function StorePage() {
       </Card>
 
       <ul className="mt-4 space-y-4">
-        {PRODUCTS.map((p) => (
+        {items.map((p) => (
           <li key={p.id}>
             <Card>
               <CardContent className="p-4">
