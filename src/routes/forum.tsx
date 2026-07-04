@@ -42,6 +42,7 @@ function ForumPage() {
   const [posting, setPosting] = useState(false);
   const [online, setOnline] = useState(true);
   const clientId = typeof window !== "undefined" ? getClientId() : "";
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const profile = loadObject<{ name?: string }>(PROFILE_KEY, {});
@@ -51,6 +52,12 @@ function ForumPage() {
     const off = () => setOnline(false);
     window.addEventListener("online", on);
     window.addEventListener("offline", off);
+
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const { data: ok } = await supabase.rpc("has_role", { _user_id: data.user.id, _role: "admin" });
+      setIsAdmin(!!ok);
+    });
 
     let cancelled = false;
     (async () => {
@@ -116,6 +123,11 @@ function ForumPage() {
   }
 
   async function remove(id: string, ownClientId: string | null) {
+    if (isAdmin) {
+      const { data, error } = await supabase.rpc("admin_delete_forum_post", { post_id: id });
+      if (error || data === false) toast.error("Couldn't delete");
+      return;
+    }
     if (ownClientId !== clientId) {
       toast.error("You can only delete your own posts");
       return;
@@ -189,11 +201,11 @@ function ForumPage() {
                   <span className="ml-auto text-[10px] text-muted-foreground">
                     {new Date(p.created_at).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}
                   </span>
-                  {p.client_id === clientId ? (
+                  {p.client_id === clientId || isAdmin ? (
                   <button
                     type="button"
                     onClick={() => remove(p.id, p.client_id)}
-                    aria-label="Delete post"
+                    aria-label={isAdmin && p.client_id !== clientId ? "Delete (admin)" : "Delete post"}
                     className="rounded-lg p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                   >
                     <Trash2 className="h-3.5 w-3.5" aria-hidden />
