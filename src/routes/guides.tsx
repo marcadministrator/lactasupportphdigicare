@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Baby, HeartPulse, Utensils, Search } from "lucide-react";
 import { BREASTFEEDING, POSTPARTUM, RECIPES, type Guide } from "@/lib/guides-data";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/guides")({
   head: () => ({
@@ -30,10 +31,32 @@ const TABS = [
 function GuidesPage() {
   const [q, setQ] = useState("");
   const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("breastfeeding");
+  const [extra, setExtra] = useState<Guide[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("guides")
+        .select("id,category,title,summary,body,sort_order")
+        .order("sort_order");
+      if (data) {
+        setExtra(
+          data.map((g) => ({
+            id: g.id,
+            category: g.category as Guide["category"],
+            title: g.title,
+            summary: g.summary,
+            body: g.body,
+          })),
+        );
+      }
+    })();
+  }, []);
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    const source = TABS.find((t) => t.key === tab)!.data;
+    const base = TABS.find((t) => t.key === tab)!.data;
+    const source = [...extra.filter((g) => g.category === tab), ...base];
     if (!term) return source;
     return source.filter(
       (g) =>
@@ -41,7 +64,7 @@ function GuidesPage() {
         g.summary.toLowerCase().includes(term) ||
         g.body.toLowerCase().includes(term),
     );
-  }, [q, tab]);
+  }, [q, tab, extra]);
 
   const total = BREASTFEEDING.length + POSTPARTUM.length + RECIPES.length;
 
