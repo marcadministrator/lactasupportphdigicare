@@ -132,6 +132,39 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function LovableBadgeAutoHide() {
+  useEffect(() => {
+    const hideLovableBadge = () => {
+      const selectors = [
+        "[class*='lovable']",
+        "[id*='lovable']",
+        "[data-lovable]",
+        "iframe[src*='lovable']",
+        "a[href*='lovable.dev']",
+        "img[alt*='Lovable']",
+      ];
+      selectors.forEach((selector) => {
+        document.querySelectorAll(selector).forEach((el) => {
+          (el as HTMLElement).style.display = "none";
+        });
+      });
+    };
+
+    hideLovableBadge();
+    const timeout = setTimeout(hideLovableBadge, 1000);
+
+    const observer = new MutationObserver(() => hideLovableBadge());
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      clearTimeout(timeout);
+      observer.disconnect();
+    };
+  }, []);
+
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -139,6 +172,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <LovableBadgeAutoHide />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
