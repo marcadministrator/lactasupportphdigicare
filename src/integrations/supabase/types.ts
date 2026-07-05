@@ -47,6 +47,7 @@ export type Database = {
           category: string
           created_at: string
           id: string
+          slug: string | null
           sort_order: number
           summary: string
           tags: string[] | null
@@ -58,6 +59,7 @@ export type Database = {
           category: string
           created_at?: string
           id?: string
+          slug?: string | null
           sort_order?: number
           summary: string
           tags?: string[] | null
@@ -69,6 +71,7 @@ export type Database = {
           category?: string
           created_at?: string
           id?: string
+          slug?: string | null
           sort_order?: number
           summary?: string
           tags?: string[] | null
