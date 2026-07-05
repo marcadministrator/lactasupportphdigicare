@@ -86,10 +86,10 @@ function GuidesPage() {
       </div>
 
       <div className="mt-3 grid grid-cols-3 gap-2">
-        {TABS.map(({ key, label, Icon, data }) => {
+        {TABS.map(({ key, label, Icon, fallback }) => {
           const active = tab === key;
-          const count = (dbGuides ?? []).filter((g) => g.category === key).length || 0;
-          const shown = count > 0 ? count : TABS.find((t) => t.key === key)!.fallback.length;
+          const count = (dbGuides ?? []).filter((g) => g.category === key).length;
+          const shown = count > 0 ? count : fallback.length;
           return (
             <button
               key={key}
@@ -103,7 +103,7 @@ function GuidesPage() {
             >
               <Icon className="h-4 w-4" aria-hidden />
               <span>{label}</span>
-              <span className="text-[10px] opacity-70">{data.length} articles</span>
+              <span className="text-[10px] opacity-70">{shown} articles</span>
             </button>
           );
         })}
