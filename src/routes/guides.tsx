@@ -23,15 +23,15 @@ export const Route = createFileRoute("/guides")({
 });
 
 const TABS = [
-  { key: "breastfeeding", label: "Breastfeeding", Icon: Baby, data: BREASTFEEDING },
-  { key: "postpartum", label: "Postpartum", Icon: HeartPulse, data: POSTPARTUM },
-  { key: "recipes", label: "Recipes", Icon: Utensils, data: RECIPES },
+  { key: "breastfeeding", label: "Breastfeeding", Icon: Baby, fallback: BREASTFEEDING },
+  { key: "postpartum", label: "Postpartum", Icon: HeartPulse, fallback: POSTPARTUM },
+  { key: "recipes", label: "Recipes", Icon: Utensils, fallback: RECIPES },
 ] as const;
 
 function GuidesPage() {
   const [q, setQ] = useState("");
   const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("breastfeeding");
-  const [extra, setExtra] = useState<Guide[]>([]);
+  const [dbGuides, setDbGuides] = useState<Guide[] | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -39,8 +39,8 @@ function GuidesPage() {
         .from("guides")
         .select("id,category,title,summary,body,sort_order")
         .order("sort_order");
-      if (data) {
-        setExtra(
+      if (data && data.length > 0) {
+        setDbGuides(
           data.map((g) => ({
             id: g.id,
             category: g.category as Guide["category"],
@@ -49,14 +49,17 @@ function GuidesPage() {
             body: g.body,
           })),
         );
+      } else {
+        setDbGuides([]);
       }
     })();
   }, []);
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    const base = TABS.find((t) => t.key === tab)!.data;
-    const source = [...extra.filter((g) => g.category === tab), ...base];
+    const fallback = TABS.find((t) => t.key === tab)!.fallback;
+    const dbForTab = (dbGuides ?? []).filter((g) => g.category === tab);
+    const source = dbForTab.length > 0 ? dbForTab : fallback;
     if (!term) return source;
     return source.filter(
       (g) =>
@@ -64,9 +67,11 @@ function GuidesPage() {
         g.summary.toLowerCase().includes(term) ||
         g.body.toLowerCase().includes(term),
     );
-  }, [q, tab, extra]);
+  }, [q, tab, dbGuides]);
 
-  const total = BREASTFEEDING.length + POSTPARTUM.length + RECIPES.length;
+  const total = (dbGuides && dbGuides.length > 0)
+    ? dbGuides.length
+    : BREASTFEEDING.length + POSTPARTUM.length + RECIPES.length;
 
   return (
     <AppShell title="Offline Guides" subtitle={`${total}+ articles — walang internet na kailangan`}>
@@ -83,6 +88,8 @@ function GuidesPage() {
       <div className="mt-3 grid grid-cols-3 gap-2">
         {TABS.map(({ key, label, Icon, data }) => {
           const active = tab === key;
+          const count = (dbGuides ?? []).filter((g) => g.category === key).length || 0;
+          const shown = count > 0 ? count : TABS.find((t) => t.key === key)!.fallback.length;
           return (
             <button
               key={key}

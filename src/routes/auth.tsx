@@ -65,8 +65,8 @@ function AuthPage() {
         <CardContent className="flex items-start gap-3 p-4">
           <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" aria-hidden />
           <p className="text-xs text-foreground/80">
-            This area is for LactaSupport PH administrators only. The founding admin is
-            {" "}<span className="font-semibold">administrator@lactasupport.ph</span>.
+            This area is for LactaSupport PH administrators only. Access is granted by
+            an existing admin.
           </p>
         </CardContent>
       </Card>

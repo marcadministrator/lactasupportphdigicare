@@ -100,7 +100,7 @@ function AccountPage() {
         to="/admin"
         className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10"
       >
-        <ShieldCheck className="h-4 w-4" aria-hidden /> Administrator sign in
+        <ShieldCheck className="h-4 w-4" aria-hidden /> Administrator Portal
       </Link>
     </AppShell>
   );
