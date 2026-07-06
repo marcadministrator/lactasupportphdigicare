@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ShieldCheck, LogOut, Trash2, Pencil, Plus, BadgeCheck } from "lucide-react";
+import { ShieldCheck, LogOut, Trash2, Pencil, Plus, BadgeCheck, Inbox, Send } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -24,15 +24,26 @@ export const Route = createFileRoute("/_authenticated/admin")({
 type Product = { id: string; name: string; price_cents: number; description: string | null; active: boolean; sort_order: number };
 type Guide = { id: string; category: "breastfeeding" | "postpartum" | "recipes"; title: string; summary: string; body: string; sort_order: number };
 type ForumPost = { id: string; name: string; body: string; created_at: string };
+type Inquiry = {
+  id: string;
+  product_name: string;
+  customer_name: string;
+  contact: string;
+  message: string;
+  status: string;
+  admin_reply: string | null;
+  replied_at: string | null;
+  created_at: string;
+};
 
-const TABS = ["products", "guides", "forum"] as const;
+const TABS = ["inbox", "products", "guides", "forum"] as const;
 type Tab = (typeof TABS)[number];
 
 function AdminPage() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [email, setEmail] = useState<string>("");
-  const [tab, setTab] = useState<Tab>("products");
+  const [tab, setTab] = useState<Tab>("inbox");
 
   useEffect(() => {
     (async () => {
@@ -95,7 +106,7 @@ function AdminPage() {
         </CardContent>
       </Card>
 
-      <div className="mt-4 grid grid-cols-3 gap-2">
+      <div className="mt-4 grid grid-cols-4 gap-2">
         {TABS.map((t) => (
           <button
             key={t}
@@ -111,9 +122,133 @@ function AdminPage() {
       </div>
 
       <div className="mt-4">
-        {tab === "products" ? <ProductsPanel /> : tab === "guides" ? <GuidesPanel /> : <ForumPanel />}
+        {tab === "inbox" ? <InboxPanel /> : tab === "products" ? <ProductsPanel /> : tab === "guides" ? <GuidesPanel /> : <ForumPanel />}
       </div>
     </AppShell>
+  );
+}
+
+function InboxPanel() {
+  const [items, setItems] = useState<Inquiry[]>([]);
+  const [replyFor, setReplyFor] = useState<Inquiry | null>(null);
+  const [replyText, setReplyText] = useState("");
+
+  async function load() {
+    const { data, error } = await (supabase as any)
+      .from("inquiries")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) return toast.error("Load failed");
+    setItems((data ?? []) as Inquiry[]);
+  }
+  useEffect(() => { load(); }, []);
+
+  async function saveReply() {
+    if (!replyFor) return;
+    if (!replyText.trim()) return toast.error("Write a reply first");
+    const { error } = await (supabase as any)
+      .from("inquiries")
+      .update({ admin_reply: replyText.trim(), replied_at: new Date().toISOString(), status: "replied" })
+      .eq("id", replyFor.id);
+    if (error) return toast.error(error.message);
+    toast.success("Reply saved");
+    setReplyFor(null);
+    setReplyText("");
+    load();
+  }
+
+  async function markStatus(id: string, status: string) {
+    const { error } = await (supabase as any).from("inquiries").update({ status }).eq("id", id);
+    if (error) return toast.error(error.message);
+    load();
+  }
+
+  async function remove(id: string) {
+    if (!confirm("Delete this inquiry?")) return;
+    const { error } = await (supabase as any).from("inquiries").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Deleted");
+    load();
+  }
+
+  function contactLink(contact: string, reply: string) {
+    const body = encodeURIComponent(reply);
+    if (contact.includes("@")) return `mailto:${contact}?subject=${encodeURIComponent("LactaSupport PH inquiry")}&body=${body}`;
+    const phone = contact.replace(/[^0-9+]/g, "");
+    return `sms:${phone}?&body=${body}`;
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="flex items-center gap-1 text-xs text-muted-foreground">
+        <Inbox className="h-3.5 w-3.5" aria-hidden /> Customer inquiries from the Store page.
+      </p>
+      {items.length === 0 ? (
+        <p className="text-center text-sm text-muted-foreground">No inquiries yet.</p>
+      ) : null}
+      <ul className="space-y-2">
+        {items.map((q) => (
+          <li key={q.id}>
+            <Card>
+              <CardContent className="p-3">
+                <div className="flex items-start gap-2">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">{q.customer_name}</p>
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase ${
+                        q.status === "replied" ? "bg-primary/10 text-primary" :
+                        q.status === "closed" ? "bg-muted text-muted-foreground" :
+                        "bg-amber-100 text-amber-700"
+                      }`}>{q.status}</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      {new Date(q.created_at).toLocaleString([], { dateStyle: "short", timeStyle: "short" })} · {q.product_name}
+                    </p>
+                    <p className="mt-1 text-xs text-primary">{q.contact}</p>
+                    <p className="mt-2 text-sm text-foreground/85 whitespace-pre-wrap">{q.message}</p>
+                    {q.admin_reply ? (
+                      <div className="mt-2 rounded-lg border border-primary/30 bg-primary/5 p-2">
+                        <p className="text-[10px] uppercase text-primary">Your reply</p>
+                        <p className="text-sm text-foreground/85 whitespace-pre-wrap">{q.admin_reply}</p>
+                      </div>
+                    ) : null}
+                  </div>
+                  <button onClick={() => remove(q.id)} aria-label="Delete" className="rounded-lg p-1 text-destructive hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></button>
+                </div>
+                <div className="mt-2 flex gap-2">
+                  <Button size="sm" variant="secondary" className="flex-1" onClick={() => { setReplyFor(q); setReplyText(q.admin_reply ?? ""); }}>
+                    <Send className="mr-1 h-3.5 w-3.5" aria-hidden /> Reply
+                  </Button>
+                  {q.status !== "closed" ? (
+                    <Button size="sm" variant="outline" onClick={() => markStatus(q.id, "closed")}>Close</Button>
+                  ) : (
+                    <Button size="sm" variant="outline" onClick={() => markStatus(q.id, "new")}>Reopen</Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </li>
+        ))}
+      </ul>
+
+      {replyFor ? (
+        <Card className="border-primary/40">
+          <CardContent className="space-y-2 p-3">
+            <p className="text-xs font-semibold">Reply to {replyFor.customer_name}</p>
+            <p className="text-[10px] text-muted-foreground">Saved here + opens {replyFor.contact.includes("@") ? "email" : "SMS"} to send</p>
+            <Textarea rows={4} value={replyText} onChange={(e) => setReplyText(e.target.value)} />
+            <div className="flex gap-2">
+              <Button size="sm" className="flex-1" onClick={saveReply}>Save reply</Button>
+              <Button asChild size="sm" variant="secondary">
+                <a href={contactLink(replyFor.contact, replyText)} onClick={saveReply}>Send</a>
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => { setReplyFor(null); setReplyText(""); }}>Cancel</Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+    </div>
   );
 }
 
