@@ -80,6 +80,56 @@ export type Database = {
         }
         Relationships: []
       }
+      inquiries: {
+        Row: {
+          admin_reply: string | null
+          contact: string
+          created_at: string
+          customer_name: string
+          id: string
+          message: string
+          product_id: string | null
+          product_name: string
+          replied_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_reply?: string | null
+          contact: string
+          created_at?: string
+          customer_name: string
+          id?: string
+          message: string
+          product_id?: string | null
+          product_name: string
+          replied_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_reply?: string | null
+          contact?: string
+          created_at?: string
+          customer_name?: string
+          id?: string
+          message?: string
+          product_id?: string | null
+          product_name?: string
+          replied_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiries_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "store_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_products: {
         Row: {
           active: boolean
