@@ -2,9 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Wallet, Bitcoin, Truck, ShoppingBag, MessageCircle, Sparkles } from "lucide-react";
+import { CreditCard, Wallet, Bitcoin, Truck, ShoppingBag, MessageCircle, Sparkles, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/store")({
   head: () => ({
@@ -58,6 +63,9 @@ const PAYMENTS = [
 function StorePage() {
   type Item = { id: string; name: string; price: string; tagline?: string; bullets: readonly string[]; tone: string };
   const [items, setItems] = useState<Item[]>(FALLBACK_PRODUCTS as unknown as Item[]);
+  const [inquireFor, setInquireFor] = useState<Item | null>(null);
+  const [form, setForm] = useState({ customer_name: "", contact: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -83,6 +91,28 @@ function StorePage() {
 
   const orderLink = (name: string) =>
     `sms:?&body=${encodeURIComponent(`Hi LactaSupport! I'd like to order: ${name}.`)}`;
+
+  async function submitInquiry() {
+    if (!inquireFor) return;
+    if (!form.customer_name.trim() || !form.contact.trim() || !form.message.trim()) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    setSubmitting(true);
+    const productId = inquireFor.id.length === 36 ? inquireFor.id : null;
+    const { error } = await (supabase as any).from("inquiries").insert({
+      product_id: productId,
+      product_name: inquireFor.name,
+      customer_name: form.customer_name.trim(),
+      contact: form.contact.trim(),
+      message: form.message.trim(),
+    });
+    setSubmitting(false);
+    if (error) return toast.error(error.message);
+    toast.success("Inquiry sent! We'll reply soon.");
+    setInquireFor(null);
+    setForm({ customer_name: "", contact: "", message: "" });
+  }
 
   return (
     <AppShell title="Store" subtitle="Buy directly from LactaSupport PH">
@@ -128,6 +158,9 @@ function StorePage() {
                     <a href="tel:09171234567">Call to order</a>
                   </Button>
                 </div>
+                <Button variant="outline" className="mt-2 w-full" onClick={() => setInquireFor(p)}>
+                  <Mail className="mr-1 h-4 w-4" aria-hidden /> Inquire Online
+                </Button>
               </CardContent>
             </Card>
           </li>
@@ -154,6 +187,32 @@ function StorePage() {
           shipping address.
         </p>
       </section>
+
+      <Dialog open={!!inquireFor} onOpenChange={(o) => !o && setInquireFor(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Inquire about {inquireFor?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">Your name</Label>
+              <Input value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} />
+            </div>
+            <div>
+              <Label className="text-xs">Contact (email or phone)</Label>
+              <Input value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} />
+            </div>
+            <div>
+              <Label className="text-xs">Message</Label>
+              <Textarea rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInquireFor(null)}>Cancel</Button>
+            <Button onClick={submitInquiry} disabled={submitting}>{submitting ? "Sending…" : "Send inquiry"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }
